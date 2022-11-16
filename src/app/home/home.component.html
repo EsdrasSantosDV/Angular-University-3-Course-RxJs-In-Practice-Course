@@ -6,9 +6,9 @@
     <mat-tab-group>
 
         <mat-tab label="Beginners">
-
+<!--            ASSYNC ELE FAZ UM SUBSCRIBE NO OBSERVABLE, E DA UM UNSUBSCRIBED QUANDO ESSE COMPONENTE E DESTRUIDO-->
             <courses-card-list
-                    [courses]="beginnerCourses">
+                    [courses]="beginnerCourses$ |async">
 
             </courses-card-list>
 
@@ -17,7 +17,7 @@
         <mat-tab label="Advanced">
 
             <courses-card-list
-                    [courses]="advancedCourses"
+                    [courses]="advancedCourses$ | async"
 
             ></courses-card-list>
 

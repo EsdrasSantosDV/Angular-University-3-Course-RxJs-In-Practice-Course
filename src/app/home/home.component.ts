@@ -11,27 +11,29 @@ import {createHttpObservable} from '../common/util';
     styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-    beginnerCourses: Course[];
-    advancedCourses: Course[];
+    beginnerCourses$: Observable<Course[]>;
+    advancedCourses$: Observable<Course[]>;
 
 
     ngOnInit() {
-      const http$ = createHttpObservable('http://localhost:9000/api/courses');
+      const http$:Observable<Course> = createHttpObservable('http://localhost:9000/api/courses');
       //pipe operator
-      const courses$=http$.pipe(
+      const courses$ = http$.pipe(
         map(
           res=> Object.values<Course>(res["payload"])
         )
       );
-      courses$.subscribe(courses => {
-          this.beginnerCourses=courses.filter(course=>course.category=='BEGINNER')
-          console.log(this.beginnerCourses);
-          this.advancedCourses=courses.filter(course=>course.category=='ADVANCED')
-          console.log(this.advancedCourses);
-        },
-        noop,
-        ()=>console.log('complete')
+
+      this.beginnerCourses$=courses$
+        .pipe(
+            map(courses=>courses.filter(course=>course.category=='BEGINNER'))
       );
+
+      this.advancedCourses$=courses$
+        .pipe(
+          map(courses=>courses.filter(course=>course.category=='ADVANCED'))
+        );
+
 
 
     }
