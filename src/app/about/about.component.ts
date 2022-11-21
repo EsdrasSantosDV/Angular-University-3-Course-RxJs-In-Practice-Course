@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import {concat, fromEvent, interval, noop, Observable, of, timer} from 'rxjs';
+import {concat, fromEvent, interval, merge, noop, Observable, of, timer} from 'rxjs';
 import {createHttpObservable} from '../common/util';
 import {map} from 'rxjs/operators';
 
@@ -27,7 +27,20 @@ export class AboutComponent implements OnInit {
       source3$,
     )
 
-    result$.subscribe(console.log);
+   // result$.subscribe(console.log);
+
+
+
+    const interval1$=interval(1000);
+    const interval3$=interval(10000);
+    const insterval2$=interval1$.pipe(map(val=>10*val));
+
+    //TRANSFORMA VARIOS OBSERVABLES EM UM SO
+    const result2$=merge(interval1$,insterval2$,interval3$);
+
+    result2$.subscribe(console.log)
+
+
 
 
 
