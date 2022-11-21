@@ -44,7 +44,7 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
           filter(()=>this.form.valid),
           //O MERGE MAP NÃO PRECISA ESPERAR CADA RODADA DE MERGE TERMINAR, ELE FAZ DE FORMA PARARELA
          //ELE E O MELHOR PRA MELHORAR A PERFORMACE DE UM HTTP REQUEST EM PARARELO
-          mergeMap(changes=>this.saveCourse(changes)),
+          concatMap(changes=>this.saveCourse(changes)),
         )
         .subscribe();
     }
@@ -60,7 +60,11 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
+      fromEvent(this.saveButton.nativeElement,'click').pipe(
+        //VAI MAPEAR O OBSERVABLE, E IGRNOAR OS VALROES DO PRIMEIRO ATE QUE O SEGUNDO OBSERVABEL SEJA CONCLUIDO
+        exhaustMap(changes=>this.saveCourse(this.form.value))
 
+      ).subscribe();
 
     }
 
