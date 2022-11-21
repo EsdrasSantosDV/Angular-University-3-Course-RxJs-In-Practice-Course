@@ -42,7 +42,9 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
         .pipe(
         // EMITE VALORES QUE PASSOU NA CONDIÇAÕ
           filter(()=>this.form.valid),
-          concatMap(changes=>this.saveCourse(changes)),
+          //O MERGE MAP NÃO PRECISA ESPERAR CADA RODADA DE MERGE TERMINAR, ELE FAZ DE FORMA PARARELA
+         //ELE E O MELHOR PRA MELHORAR A PERFORMACE DE UM HTTP REQUEST EM PARARELO
+          mergeMap(changes=>this.saveCourse(changes)),
         )
         .subscribe();
     }
