@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {concat, fromEvent, interval, merge, noop, Observable, of, timer} from 'rxjs';
 import {createHttpObservable} from '../common/util';
 import {map} from 'rxjs/operators';
+import {Course} from '../model/course';
 
 @Component({
   selector: 'about',
@@ -38,11 +39,23 @@ export class AboutComponent implements OnInit {
     //TRANSFORMA VARIOS OBSERVABLES EM UM SO
     const result2$=merge(interval1$,insterval2$,interval3$);
 
-    result2$.subscribe(console.log)
+   // result2$.subscribe(console.log)
+
+
+    const int1$= interval(1000);
+
+    const sub= int1$.subscribe();
 
 
 
+    setTimeout(()=>sub.unsubscribe(),5000);
 
+    const http$:Observable<Course> = createHttpObservable('http://localhost:9000/api/courses');
+
+
+    http$.subscribe(console.log);
+    const sub1= http$.subscribe();
+    setTimeout(()=>sub1.unsubscribe(),0);
 
 
 
