@@ -25,7 +25,7 @@ import {createHttpObservable} from '../common/util';
 })
 export class CourseComponent implements OnInit, AfterViewInit {
 
-
+    courseId:string;
     course$: Observable<Course>;
     lessons$: Observable<Lesson[]>;
 
@@ -37,16 +37,19 @@ export class CourseComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-      const courseId = this.route.snapshot.params['id'];
-      this.course$ = createHttpObservable(`http://localhost:9000/api/courses/${courseId}`);
-      this.lessons$ = createHttpObservable(`http://localhost:9000/api/lessons?courseId=${courseId}&pageSize=100`).pipe(map(res=> res['payload']));
+      this.courseId = this.route.snapshot.params['id'];
+      this.course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
+
 
     }
 
     ngAfterViewInit() {
+
+
+
       //VAMOS CRIAR UM EVENTO
       //TAMOS CRIANDO UM FLUXO LIGANDO O INPUT DO CAMPO DE PESQUISA, AO EVENTO DE KEYUP
-      fromEvent<any>(this.input.nativeElement,'keyup').pipe(
+      const searchLessons$=fromEvent<any>(this.input.nativeElement,'keyup').pipe(
         map(event=>event.target.value),
         //Debounce time descarta os valores emitidos que levam menos que o tempo especificado
         //entre a saida
@@ -56,15 +59,28 @@ export class CourseComponent implements OnInit, AfterViewInit {
         //o valor mais recente e emite esse valor mais recente quando o tempo devido é passado
         debounceTime(400),
         //é evitar emissões duplicadas dos valores nas entradas.
-        distinctUntilChanged()
-        ).subscribe(console.log);
+        distinctUntilChanged(),
+        switchMap(search=> this.loadLessons(search))
+        );
+
+      const initialLessons$=this.loadLessons();
 
 
 
+
+      this.lessons$ =concat(initialLessons$, searchLessons$);
 
     }
 
 
+
+    loadLessons(search = ''): Observable<Lesson[]> {
+      return createHttpObservable(
+        `http://localhost:9000/api/lessons?courseId=${this.courseId}&pageSize=100&filter=${search}`)
+        .pipe(
+          map(res => res["payload"])
+        );
+    }
 
 
 }
