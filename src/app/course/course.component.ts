@@ -49,8 +49,10 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
       //VAMOS CRIAR UM EVENTO
       //TAMOS CRIANDO UM FLUXO LIGANDO O INPUT DO CAMPO DE PESQUISA, AO EVENTO DE KEYUP
-      const searchLessons$=fromEvent<any>(this.input.nativeElement,'keyup').pipe(
+      this.lessons$=fromEvent<any>(this.input.nativeElement,'keyup').pipe(
         map(event=>event.target.value),
+        //START WITH E O VALOR INCIIAL DO NOSSO FLUXO
+        startWith(''),
         //Debounce time descarta os valores emitidos que levam menos que o tempo especificado
         //entre a saida
         //atrasa os valores emitidos por uma fonte para o devido tempo dado.
@@ -63,12 +65,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
         switchMap(search=> this.loadLessons(search))
         );
 
-      const initialLessons$=this.loadLessons();
 
-
-
-
-      this.lessons$ =concat(initialLessons$, searchLessons$);
 
     }
 
