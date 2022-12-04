@@ -9,6 +9,15 @@ export  function createHttpObservable(url:string)
     const signal=controller.signal;
 
     fetch(url,{signal}).then(response=>{
+
+      if(response.ok)
+      {
+        return  response.json();
+      }
+      else {
+        observer.error('Request failed  with status code ' +response.status);
+      }
+
       return response.json();
     })
       .then(body=>{

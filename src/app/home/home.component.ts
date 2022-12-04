@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Course} from "../model/course";
-import {interval, noop, Observable, of, timer} from 'rxjs';
-import {catchError, delayWhen, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
+import {interval, noop, Observable, of, throwError, timer} from 'rxjs';
+import {catchError, delayWhen, finalize, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
 import {createHttpObservable} from '../common/util';
 
 
@@ -21,30 +21,24 @@ export class HomeComponent implements OnInit {
 
       //PRECIAMOS CRIAR UMA SUBSCRIPTION
       const courses$ = http$.pipe(
+        //PROVER UM ALTERNATIVO OBSERVER
+        //PRO CONSUMIR UM ALTERNATIVO OBSERVER CASO DE ERRO
+        //STRATEGY ERROR ESSA E UMA APLICAÇÃO
+        //CASO DE MERDA NA REQUISIÇÃO, VOCE PODE PEGAR DE OUTRO CANTO
+        catchError(err =>{
+          console.log("Error occurred", err);
+          //VAMOS EMITIR UM OBSERBABLE COM O STATUS DE ERROR
+          return throwError(err);
+        }),   //VAI INVOCAR QUANDO FOR COMPLETADO OU QUANDO DER ERRO
+        finalize(()=>console.log("Finalized Executed ...")),
         tap(()=>console.log("HTTP REQUEST EXECUTED")),
         map(
             res=> Object.values<Course>(res["payload"]),
         ),
         //VOCE UTILIZA ISSO PARA COMPARTILHAR PARA VARIAS ASSINATURAS
         //FAZENDO COM QUE POR EXEMPLO, NÃO FAÇA VARIAS REQUISIÇOES POR EXEMPLO
-        shareReplay(),
+        shareReplay()
 
-
-        //PROVER UM ALTERNATIVO OBSERVER
-        //PRO CONSUMIR UM ALTERNATIVO OBSERVER CASO DE ERRO
-        //STRATEGY ERROR ESSA E UMA APLICAÇÃO
-        //CASO DE MERDA NA REQUISIÇÃO, VOCE PODE PEGAR DE OUTRO CANTO
-        catchError(err=> of([
-          {
-            id: 0,
-            description: "RxJs In Practice Course",
-            iconUrl: 'https://s3-us-west-1.amazonaws.com/angular-university/course-images/rxjs-in-practice-course.png',
-            courseListIcon: 'https://angular-academy.s3.amazonaws.com/main-logo/main-page-logo-small-hat.png',
-            longDescription: "Understand the RxJs Observable pattern, learn the RxJs Operators via practical examples",
-            category: 'BEGINNER',
-            lessonsCount: 10
-          }
-        ]))
       );
 
       //NESSE CASO AS DUAS ESTÃO PEGANDO DO MESMO HTTP
