@@ -42,7 +42,22 @@ export class CourseComponent implements OnInit, AfterViewInit {
       this.lessons$ = createHttpObservable(`http://localhost:9000/api/lessons?courseId=${courseId}&pageSize=100`).pipe(map(res=> res['payload']));
 
     }
+
     ngAfterViewInit() {
+      //VAMOS CRIAR UM EVENTO
+      //TAMOS CRIANDO UM FLUXO LIGANDO O INPUT DO CAMPO DE PESQUISA, AO EVENTO DE KEYUP
+      fromEvent<any>(this.input.nativeElement,'keyup').pipe(
+        map(event=>event.target.value),
+        //Debounce time descarta os valores emitidos que levam menos que o tempo especificado
+        //entre a saida
+        //atrasa os valores emitidos por uma fonte para o devido tempo dado.
+        // Se dentro desse tempo chegar um novo valor, o valor pendente anterior é descartado e o cronômetro é zerado.
+        // Dessa forma, debounceTimerastreia
+        //o valor mais recente e emite esse valor mais recente quando o tempo devido é passado
+        debounceTime(400),
+        //é evitar emissões duplicadas dos valores nas entradas.
+        distinctUntilChanged()
+        ).subscribe(console.log);
 
 
 
