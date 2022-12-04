@@ -28,6 +28,23 @@ export class HomeComponent implements OnInit {
         //VOCE UTILIZA ISSO PARA COMPARTILHAR PARA VARIAS ASSINATURAS
         //FAZENDO COM QUE POR EXEMPLO, NÃO FAÇA VARIAS REQUISIÇOES POR EXEMPLO
         shareReplay(),
+
+
+        //PROVER UM ALTERNATIVO OBSERVER
+        //PRO CONSUMIR UM ALTERNATIVO OBSERVER CASO DE ERRO
+        //STRATEGY ERROR ESSA E UMA APLICAÇÃO
+        //CASO DE MERDA NA REQUISIÇÃO, VOCE PODE PEGAR DE OUTRO CANTO
+        catchError(err=> of([
+          {
+            id: 0,
+            description: "RxJs In Practice Course",
+            iconUrl: 'https://s3-us-west-1.amazonaws.com/angular-university/course-images/rxjs-in-practice-course.png',
+            courseListIcon: 'https://angular-academy.s3.amazonaws.com/main-logo/main-page-logo-small-hat.png',
+            longDescription: "Understand the RxJs Observable pattern, learn the RxJs Operators via practical examples",
+            category: 'BEGINNER',
+            lessonsCount: 10
+          }
+        ]))
       );
 
       //NESSE CASO AS DUAS ESTÃO PEGANDO DO MESMO HTTP
