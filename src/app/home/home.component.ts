@@ -21,23 +21,19 @@ export class HomeComponent implements OnInit {
 
       //PRECIAMOS CRIAR UMA SUBSCRIPTION
       const courses$ = http$.pipe(
-        //PROVER UM ALTERNATIVO OBSERVER
-        //PRO CONSUMIR UM ALTERNATIVO OBSERVER CASO DE ERRO
-        //STRATEGY ERROR ESSA E UMA APLICAÇÃO
-        //CASO DE MERDA NA REQUISIÇÃO, VOCE PODE PEGAR DE OUTRO CANTO
-        catchError(err =>{
-          console.log("Error occurred", err);
-          //VAMOS EMITIR UM OBSERBABLE COM O STATUS DE ERROR
-          return throwError(err);
-        }),   //VAI INVOCAR QUANDO FOR COMPLETADO OU QUANDO DER ERRO
-        finalize(()=>console.log("Finalized Executed ...")),
         tap(()=>console.log("HTTP REQUEST EXECUTED")),
         map(
             res=> Object.values<Course>(res["payload"]),
         ),
         //VOCE UTILIZA ISSO PARA COMPARTILHAR PARA VARIAS ASSINATURAS
         //FAZENDO COM QUE POR EXEMPLO, NÃO FAÇA VARIAS REQUISIÇOES POR EXEMPLO
-        shareReplay()
+        shareReplay(),
+        //TESTAR NOVAMENTE QUANDO PASSAR MAIS DE 2000 MILISEGUNDAS E TENTA DNV
+        //SERIA O operador RetryWhen Angule RxJs tenta novamente o Observable com falha toda vez que um Notification Observable emite o próximo valo
+        retryWhen(errors=>errors.pipe(
+          //O DelayWhen dispara quando o timer observável emite um valor após 2000 ms
+          delayWhen(()=> timer(2000))
+        ))
 
       );
 
