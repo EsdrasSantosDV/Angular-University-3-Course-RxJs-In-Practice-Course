@@ -16,6 +16,7 @@ import {
 import {merge, fromEvent, Observable, concat} from 'rxjs';
 import {Lesson} from '../model/lesson';
 import {createHttpObservable} from '../common/util';
+import {debug, RxJsLoggingLevel} from '../common/debug';
 
 
 @Component({
@@ -53,6 +54,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
         map(event=>event.target.value),
         //START WITH E O VALOR INCIIAL DO NOSSO FLUXO
         startWith(''),
+        debug(RxJsLoggingLevel.TRACE,"search "),
         //Debounce time descarta os valores emitidos que levam menos que o tempo especificado
         //entre a saida
         //atrasa os valores emitidos por uma fonte para o devido tempo dado.
@@ -62,7 +64,8 @@ export class CourseComponent implements OnInit, AfterViewInit {
         debounceTime(400),
         //é evitar emissões duplicadas dos valores nas entradas.
         distinctUntilChanged(),
-        switchMap(search=> this.loadLessons(search))
+        switchMap(search=> this.loadLessons(search)),
+        debug(RxJsLoggingLevel.DEBUG,"lessons value "),
         );
 
 
