@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import {concat, fromEvent, interval, merge, noop, Observable, of, Subject, timer} from 'rxjs';
+import {BehaviorSubject, concat, fromEvent, interval, merge, noop, Observable, of, Subject, timer} from 'rxjs';
 import {createHttpObservable} from '../common/util';
 import {map} from 'rxjs/operators';
 import {Course} from '../model/course';
@@ -17,17 +17,26 @@ export class AboutComponent implements OnInit {
 
     //O que é um Sujeito? Um Subject RxJS é um tipo especial de Observable
     // que permite que os valores sejam multicast para muitos Observers.
-    const subject =new Subject();
 
-    subject.subscribe(console.log);
+    //Ele precisa de um valor inicial, pois sempre deve retornar um valor na assinatura, mesmo que não tenha recebido umnext()
+    // Na assinatura, retorna o último valor do assunto. Um observável regular só dispara quando recebe umonnext
+    // a qualquer momento, você pode recuperar o último valor do assunto em um código não observável usando o getValue()método
+    
+    const subject =new BehaviorSubject(0);
+    const series$=subject.asObservable();
+    series$.subscribe(console.log);
 
-    subject.subscribe(console.log);
 
-    subject.next(1);
+
     subject.next(1);
     subject.next(2);
-    subject.next(1);
+    subject.next(3);
 
+
+    setTimeout(()=>{
+      series$.subscribe(console.log);
+      subject.next(4);
+    },3000);
 
    //  //NESSE CASO DO INTERVALL NUNCA VAMOS VER O FLUXO 2 E 32
    //  const source1$=interval(1000);
