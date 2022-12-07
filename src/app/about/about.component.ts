@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import {BehaviorSubject, concat, fromEvent, interval, merge, noop, Observable, of, Subject, timer} from 'rxjs';
+import {AsyncSubject, BehaviorSubject, concat, fromEvent, interval, merge, noop, Observable, of, ReplaySubject, Subject, timer} from 'rxjs';
 import {createHttpObservable} from '../common/util';
 import {map} from 'rxjs/operators';
 import {Course} from '../model/course';
@@ -15,15 +15,13 @@ export class AboutComponent implements OnInit {
 
   ngOnInit() {
 
-    //O que é um Sujeito? Um Subject RxJS é um tipo especial de Observable
-    // que permite que os valores sejam multicast para muitos Observers.
 
-    //Ele precisa de um valor inicial, pois sempre deve retornar um valor na assinatura, mesmo que não tenha recebido umnext()
-    // Na assinatura, retorna o último valor do assunto. Um observável regular só dispara quando recebe umonnext
-    // a qualquer momento, você pode recuperar o último valor do assunto em um código não observável usando o getValue()método
-    
-    const subject =new BehaviorSubject(0);
+    //O ASYNC SUBJECT EMITE O ULTIMO DEPOIS DE COMPLETAR
+    //O REPLAY EMITE TODOS OS VALORES ANTES DE COMPLETAR
+   // const subject =new AsyncSubject();
+    const subject =new ReplaySubject();
     const series$=subject.asObservable();
+
     series$.subscribe(console.log);
 
 
@@ -31,6 +29,7 @@ export class AboutComponent implements OnInit {
     subject.next(1);
     subject.next(2);
     subject.next(3);
+
 
 
     setTimeout(()=>{
