@@ -11,7 +11,7 @@ import {
   concatMap,
   switchMap,
   withLatestFrom,
-  concatAll, shareReplay, first
+  concatAll, shareReplay, first, take
 } from 'rxjs/operators';
 import {merge, fromEvent, Observable, concat, forkJoin} from 'rxjs';
 import {Lesson} from '../model/lesson';
@@ -43,8 +43,8 @@ export class CourseComponent implements OnInit, AfterViewInit {
       this.courseId = this.route.snapshot.params['id'];
       //const course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
       this.course$=this.store.selectCourseById(this.courseId).pipe(
-      //PEGA O PRIMEIRO DO FLUXO E COMPLETA         
-        first()
+      //TAKE(x) pega os x primeiros vlaores do fluxo
+       take(1)
       );
      // const lesson$=this.loadLessons();
     //PEGA OS ODIS ULTIMOS VALORES DOS DOIS FLUXOS
