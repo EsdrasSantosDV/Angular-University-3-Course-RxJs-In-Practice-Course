@@ -32,7 +32,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
     course$: Observable<Course>;
     lessons$: Observable<Lesson[]>;
 
-
+    course:Course;
 
     @ViewChild('searchInput', { static: true }) input: ElementRef;
 
@@ -42,18 +42,17 @@ export class CourseComponent implements OnInit, AfterViewInit {
     ngOnInit() {
       this.courseId = this.route.snapshot.params['id'];
       //const course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
-      this.course$=this.store.selectCourseById(this.courseId).pipe(
-      //TAKE(x) pega os x primeiros vlaores do fluxo
-       take(1)
-      );
-     // const lesson$=this.loadLessons();
-    //PEGA OS ODIS ULTIMOS VALORES DOS DOIS FLUXOS
-    //  forkJoin(course$,lesson$).pipe(tap(([course,lessons])=>{
-    //    console.log('course',course);
-    //    console.log('lessons',lessons);
-    //  })).subscribe();
 
-      forkJoin(this.course$,this.loadLessons()).subscribe(console.log);
+
+
+      this.course$=this.store.selectCourseById(this.courseId);
+
+
+      this.loadLessons().pipe(withLatestFrom(this.course$)).subscribe(([lessons,course])=>{
+        console.log("lessons",lessons);
+        console.log("course",course);
+      });
+
 
 
 
