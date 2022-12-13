@@ -17,6 +17,7 @@ import {merge, fromEvent, Observable, concat, forkJoin} from 'rxjs';
 import {Lesson} from '../model/lesson';
 import {createHttpObservable} from '../common/util';
 import {debug, RxJsLoggingLevel} from '../common/debug';
+import {Store} from '../common/store.service';
 
 
 @Component({
@@ -26,7 +27,7 @@ import {debug, RxJsLoggingLevel} from '../common/debug';
 })
 export class CourseComponent implements OnInit, AfterViewInit {
 
-    courseId:string;
+    courseId:number;
     course$: Observable<Course>;
     lessons$: Observable<Lesson[]>;
 
@@ -34,18 +35,19 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
     @ViewChild('searchInput', { static: true }) input: ElementRef;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private route: ActivatedRoute,private store:Store) {
     }
 
     ngOnInit() {
       this.courseId = this.route.snapshot.params['id'];
-      const course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
-      const lesson$=this.loadLessons();
-    //PEGA OS ODIS ULTIMOS VALORES DOS DOIS FLUXOS 
-     forkJoin(course$,lesson$).pipe(tap(([course,lessons])=>{
-       console.log('course',course);
-       console.log('lessons',lessons);
-     })).subscribe();
+      //const course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
+      this.course$=this.store.selectCourseById(this.courseId);
+     // const lesson$=this.loadLessons();
+    //PEGA OS ODIS ULTIMOS VALORES DOS DOIS FLUXOS
+    //  forkJoin(course$,lesson$).pipe(tap(([course,lessons])=>{
+    //    console.log('course',course);
+    //    console.log('lessons',lessons);
+    //  })).subscribe();
 
     }
 
