@@ -2,22 +2,23 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {ActivatedRoute} from "@angular/router";
 import {Course} from "../model/course";
 import {
-    debounceTime,
-    distinctUntilChanged,
-    startWith,
-    tap,
-    delay,
-    map,
-    concatMap,
-    switchMap,
-    withLatestFrom,
-    concatAll, shareReplay
+  debounceTime,
+  distinctUntilChanged,
+  startWith,
+  tap,
+  delay,
+  map,
+  concatMap,
+  switchMap,
+  withLatestFrom,
+  concatAll, shareReplay, first
 } from 'rxjs/operators';
 import {merge, fromEvent, Observable, concat, forkJoin} from 'rxjs';
 import {Lesson} from '../model/lesson';
 import {createHttpObservable} from '../common/util';
 import {debug, RxJsLoggingLevel} from '../common/debug';
 import {Store} from '../common/store.service';
+import {logging} from 'protractor';
 
 
 @Component({
@@ -41,13 +42,21 @@ export class CourseComponent implements OnInit, AfterViewInit {
     ngOnInit() {
       this.courseId = this.route.snapshot.params['id'];
       //const course$ = createHttpObservable(`http://localhost:9000/api/courses/${this.courseId}`);
-      this.course$=this.store.selectCourseById(this.courseId);
+      this.course$=this.store.selectCourseById(this.courseId).pipe(
+      //PEGA O PRIMEIRO DO FLUXO E COMPLETA         
+        first()
+      );
      // const lesson$=this.loadLessons();
     //PEGA OS ODIS ULTIMOS VALORES DOS DOIS FLUXOS
     //  forkJoin(course$,lesson$).pipe(tap(([course,lessons])=>{
     //    console.log('course',course);
     //    console.log('lessons',lessons);
     //  })).subscribe();
+
+      forkJoin(this.course$,this.loadLessons()).subscribe(console.log);
+
+
+
 
     }
 
